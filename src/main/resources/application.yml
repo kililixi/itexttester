@@ -1,0 +1,7 @@
+server:
+  port: 9080
+
+demo:
+  isopen: true
+  say-what: hello
+  to-who: she
