@@ -14,10 +14,11 @@ import java.util.Map;
 public class RemoveSignature {
 
     public static final String DEST = "/Users/startsi/Downloads/aaaaaaaaaa.pdf";
-    public static final String SRC = "/Users/startsi/Downloads/cmp_step6_signed_by_alice_bob_carol_and_dave.pdf";
+//    public static final String SRC = "/Users/startsi/Downloads/cmp_step6_signed_by_alice_bob_carol_and_dave.pdf";
+    public static final String SRC = "/Users/startsi/Downloads/input_signed.pdf";
 
     public static void main(String[] args) throws Exception {
-        new RemoveSignature().manipulatePdf3();
+        new RemoveSignature().manipulatePdf(DEST);
     }
 
     protected void manipulatePdf3() throws Exception {
@@ -48,20 +49,16 @@ public class RemoveSignature {
 
     protected void manipulatePdf(String dest) throws Exception {
         PdfDocument pdfDoc = new PdfDocument(new PdfReader(SRC), new PdfWriter(dest));
-        PdfAcroForm form = PdfAcroForm.getAcroForm(pdfDoc, true);
-        // If no fields have been explicitly included, then all fields are flattened.
-        // Otherwise only the included fields are flattened.
-        System.out.println(form.getDefaultAppearance());
-//        form.get
-//        form = form.getField("");
-        Map<String, PdfFormField> aa = form.getFormFields();
-        aa.forEach( (key, value) -> {
-            System.out.println(key);
-            System.out.println(value);
-        });
+//        PdfAcroForm form = PdfAcroForm.getAcroForm(pdfDoc, false);
+//        System.out.println(form.getDefaultAppearance());
+//        Map<String, PdfFormField> aa = form.getFormFields();
+//        aa.forEach( (key, value) -> {
+//            System.out.println(key);
+//            System.out.println(value);
+//        });
 //        PdfFormField fff = form.getField("star2");
-        form.partialFormFlattening("star2");
-        form.flattenFields();
+//        form.partialFormFlattening("sig");
+//        form.flattenFields();
 //        form.removeField("star2");
         pdfDoc.close();
     }

@@ -59,6 +59,7 @@ public class SignPDF2 {
         //false的话，pdf文件只允许被签名一次，多次签名，最后一次有效
         //true的话，pdf可以被追加签名，验签工具可以识别出每次签名之后文档是否被修改
         PdfSigner stamper = new PdfSigner(reader, os, true);
+
                 Rectangle rect = new Rectangle(36, 648, 200, 100);
                 PdfSignatureAppearance appearance = stamper.getSignatureAppearance();
                 appearance

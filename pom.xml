@@ -50,16 +50,33 @@
 			<type>pom</type>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>signature</groupId>-->
+<!--			<artifactId>bcpkix-jdk15on-152</artifactId>-->
+<!--			<version>1.0.0</version>-->
+<!--		</dependency>-->
+
+<!--		<dependency>-->
+<!--			<groupId>signature</groupId>-->
+<!--			<artifactId>bcprov-jdk15on-152</artifactId>-->
+<!--			<version>1.0.0</version>-->
+<!--		</dependency>-->
+
 		<dependency>
-			<groupId>signature</groupId>
-			<artifactId>bcpkix-jdk15on-152</artifactId>
-			<version>1.0.0</version>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.68</version>
 		</dependency>
 
 		<dependency>
-			<groupId>signature</groupId>
-			<artifactId>bcprov-jdk15on-152</artifactId>
-			<version>1.0.0</version>
+			<groupId>com.starsi</groupId>
+			<artifactId>redis-spring-boot-starter</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
 		</dependency>
 	</dependencies>
 

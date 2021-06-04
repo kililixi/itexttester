@@ -10,21 +10,16 @@ import java.security.Security;
 import java.security.cert.Certificate;
 
 import javax.swing.JOptionPane;
+
+import com.itextpdf.signatures.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.layout.element.Image;
-import com.itextpdf.signatures.BouncyCastleDigest;
-import com.itextpdf.signatures.DigestAlgorithms;
-import com.itextpdf.signatures.IExternalDigest;
-import com.itextpdf.signatures.IExternalSignature;
-import com.itextpdf.signatures.PdfSignatureAppearance;
 import com.itextpdf.signatures.PdfSignatureAppearance.RenderingMode;
-import com.itextpdf.signatures.PdfSigner;
 import com.itextpdf.signatures.PdfSigner.CryptoStandard;
-import com.itextpdf.signatures.PrivateKeySignature;
 
 public class SignPDF {
 //    public static final String KEYSTORE = "/Users/startsi/Documents/csr/pdf/new_KeyStore.keystore";//keystore文件路径
@@ -75,10 +70,8 @@ public class SignPDF {
         //四个参数的分别是，图章左下角x，图章左下角y，图章宽度，图章高度
         appearance.setPageNumber(1);
         appearance.setPageRect(new Rectangle(350, 100, width, height));
-//        appearance.getPageRect().set
         //插入盖章图片
         appearance.setSignatureGraphic(img);
-
         //设置图章的显示方式，如下选择的是只显示图章（还有其他的模式，可以图章和签名描述一同显示）
         appearance.setRenderingMode(RenderingMode.GRAPHIC);
         // 这里的itext提供了2个用于签名的接口，可以自己实现，后边着重说这个实现
@@ -86,10 +79,11 @@ public class SignPDF {
         IExternalDigest digest = new BouncyCastleDigest();
         // 签名算法
         IExternalSignature signature = new PrivateKeySignature(pk, digestAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+//                stamper.signExternalContainer();;
         // 调用itext签名方法完成pdf签章
-//        stamper.setCertificationLevel(1);
+        stamper.setCertificationLevel(1);
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        stamper.signDetached(digest,signature, chain, null, null, null, 0, PdfSigner.CryptoStandard.CADES);
+        stamper.signDetached(digest, signature, chain, null, null, null, 0, PdfSigner.CryptoStandard.CADES);
     }
 
     public static void main(String[] args) {
