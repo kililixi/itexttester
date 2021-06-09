@@ -1,8 +1,10 @@
 package com.tsuki.tester.itext;
 
+import com.itextpdf.kernel.pdf.PdfArray;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.signatures.PdfPKCS7;
+import com.itextpdf.signatures.PdfSignature;
 import com.itextpdf.signatures.SignatureUtil;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -10,12 +12,14 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.List;
 
 public class C5_01_SignatureIntegrity {
     public static final String DEST = "/Users/startsi/Downloads/";
 
-    public static final String EXAMPLE1 = "hello_server.pdf";
+//    public static final String EXAMPLE1 = "responsen2.pdf";
+    public static final String EXAMPLE1 = "signed.pdf";
     public static final String EXAMPLE2 = "hello_signed2.pdf";
     public static final String EXAMPLE3 = "hello_signed3.pdf";
     public static final String EXAMPLE4 = "hello_signed4.pdf";
@@ -76,13 +80,19 @@ public class C5_01_SignatureIntegrity {
     }
 
     public PdfPKCS7 verifySignature(SignatureUtil signUtil, String name) throws GeneralSecurityException {
-        PdfPKCS7 pkcs7 = signUtil.readSignatureData(name);
+//        PdfPKCS7 pkcs7 = signUtil.readSignatureData(name);
+
+        PdfSignature pdfSignature = signUtil.getSignature(name);
+        PdfArray pdfArray = pdfSignature.getByteRange();
+        long[] longs = pdfArray.toLongArray();
+        Arrays.stream(longs).forEach(System.out::println);
         System.out.println("Signature covers whole document: " + signUtil.signatureCoversWholeDocument(name));
         System.out.println("Document revision: " + signUtil.getRevision(name) + " of " + signUtil.getTotalRevisions());
-        System.out.println("Integrity check OK? " + pkcs7.verifySignatureIntegrityAndAuthenticity());
-        System.out.println("Integrity check OK? " + pkcs7.getSigningInfoVersion());
+//        System.out.println("Integrity check OK? " + pkcs7.verifySignatureIntegrityAndAuthenticity());
+//        System.out.println("Integrity check OK? " + pkcs7.getSigningInfoVersion());
 
-        return pkcs7;
+//        return pkcs7;
+        return null;
     }
 
     public static void main(String[] args) throws IOException, GeneralSecurityException {

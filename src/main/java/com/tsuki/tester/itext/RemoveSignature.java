@@ -15,10 +15,10 @@ public class RemoveSignature {
 
     public static final String DEST = "/Users/startsi/Downloads/aaaaaaaaaa.pdf";
 //    public static final String SRC = "/Users/startsi/Downloads/cmp_step6_signed_by_alice_bob_carol_and_dave.pdf";
-    public static final String SRC = "/Users/startsi/Downloads/input_signed.pdf";
+    public static final String SRC = "/Users/startsi/Downloads/signed.pdf";
 
     public static void main(String[] args) throws Exception {
-        new RemoveSignature().manipulatePdf(DEST);
+        new RemoveSignature().manipulatePdf(SRC);
     }
 
     protected void manipulatePdf3() throws Exception {
@@ -49,7 +49,7 @@ public class RemoveSignature {
 
     protected void manipulatePdf(String dest) throws Exception {
         PdfDocument pdfDoc = new PdfDocument(new PdfReader(SRC), new PdfWriter(dest));
-//        PdfAcroForm form = PdfAcroForm.getAcroForm(pdfDoc, false);
+        PdfAcroForm form = PdfAcroForm.getAcroForm(pdfDoc, false);
 //        System.out.println(form.getDefaultAppearance());
 //        Map<String, PdfFormField> aa = form.getFormFields();
 //        aa.forEach( (key, value) -> {
@@ -59,7 +59,7 @@ public class RemoveSignature {
 //        PdfFormField fff = form.getField("star2");
 //        form.partialFormFlattening("sig");
 //        form.flattenFields();
-//        form.removeField("star2");
+        form.removeField("Signature1");
         pdfDoc.close();
     }
 
