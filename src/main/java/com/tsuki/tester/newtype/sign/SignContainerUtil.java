@@ -41,10 +41,10 @@ public class SignContainerUtil {
         signature.update(byteArray);
         byte[] signatureValue = signature.sign();
 
-        byte[] finalSignatture = new byte[estimatedSize];
-        System.arraycopy(signatureValue, 0, finalSignatture, 0, signatureValue.length);
+//        byte[] finalSignatture = new byte[estimatedSize];
+//        System.arraycopy(signatureValue, 0, finalSignatture, 0, signatureValue.length);
 
-        System.out.println("签名， 签名长度为：" + signatureValue.length );
+        System.out.println("签名， 签名长度为：" + signatureValue.length + "； 最后一位：" + signatureValue[signatureValue.length - 1]);
         return signatureValue;
     }
 
@@ -60,9 +60,25 @@ public class SignContainerUtil {
         // MessageDigest digest = MessageDigest.getInstance("SHA-256");
         // byte[] encodedhash = digest.digest(originData);
         // System.out.println(new String(Hex.encode(encodedhash)));
-        System.out.println("验证签名， 签名长度为：" + signedData.length );
+        System.out.println("验证签名， 获取的签名长度为：" + signedData.length );
+        int delSize = 0;
+        for(int i=signedData.length -1; i>-1; i--) {
+            if(signedData[i] == 0) {
+                delSize++;
+            } else {
+                break;
+            }
+        }
+        byte[] finalSignatture = null;
+        if(delSize > 0) {
+            finalSignatture = new byte[signedData.length - delSize];
+            System.arraycopy(signedData, 0, finalSignatture, 0, signedData.length - delSize);
+        } else {
+            finalSignatture = signedData;
+        }
+        System.out.println("验证签名，delSize为： " + delSize + " 计算后的签名长度为：" + finalSignatture.length );
         signature.update(originData);
-        return signature.verify(signedData);
+        return signature.verify(finalSignatture);
 
     }
 }

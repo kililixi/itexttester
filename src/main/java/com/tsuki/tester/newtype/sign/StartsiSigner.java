@@ -56,12 +56,11 @@ public class StartsiSigner extends PdfSigner {
 
         InputStream data = getRangeStream();
         byte[] encodedSig = externalSignatureContainer.sign(data);
-        System.out.println(encodedSig.length);
-//        byte[] paddedSig = new byte[estimatedSize];
-//        System.arraycopy(encodedSig, 0, paddedSig, 0, encodedSig.length);
+        byte[] paddedSig = new byte[estimatedSize];
+        System.arraycopy(encodedSig, 0, paddedSig, 0, encodedSig.length);
 
         PdfDictionary dic2 = new PdfDictionary();
-        dic2.put(PdfName.Contents, new PdfString(encodedSig).setHexWriting(true));
+        dic2.put(PdfName.Contents, new PdfString(paddedSig).setHexWriting(true));
         close(dic2);
 
         closed = true;

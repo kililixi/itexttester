@@ -39,7 +39,7 @@ public class ExternalSignatureContainerDemo {
     }
 
     public void sign() throws IOException, GeneralSecurityException {
-        int estimatedSize = 75;
+        int estimatedSize = 100;
 
         File outputFile = new File(DEST);
         if(outputFile.exists()) {
