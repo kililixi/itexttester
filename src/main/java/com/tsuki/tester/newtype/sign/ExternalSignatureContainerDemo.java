@@ -24,11 +24,10 @@ public class ExternalSignatureContainerDemo {
     public static final String SRC = "/Users/startsi/Downloads/dddd.pdf";
     public static final String DEST = "/Users/startsi/Downloads/signed.pdf";
 //
-//    public static final String SRC = "/Users/startsi/Downloads/signed.pdf";
-//    public static final String DEST = "/Users/startsi/Downloads/signed2.pdf";
+//    public static final String SRC = "/Users/startsi/Downloads/signed2.pdf";
+//    public static final String DEST = "/Users/startsi/Downloads/signed3.pdf";
 
     public static final String p12File = "/Users/startsi/Documents/csr/newesign/user.p12";
-    int estimatedSize = 71;
 
     public static void main(String[] args) throws IOException, GeneralSecurityException {
         Security.addProvider(new BouncyCastleProvider());
@@ -40,37 +39,41 @@ public class ExternalSignatureContainerDemo {
     }
 
     public void sign() throws IOException, GeneralSecurityException {
+        int estimatedSize = 75;
 
         File outputFile = new File(DEST);
         if(outputFile.exists()) {
             outputFile.delete();
         }
 
+        IExternalSignatureContainer externalP7DetachSignatureContainer = new IExternalSignatureContainer() {
+            @Override
+            public byte[] sign(InputStream data) throws GeneralSecurityException {
+
+                byte[] result = null;
+                try {
+                    result = SignContainerUtil.P7DetachSigned(data, getPrivateKey(), estimatedSize);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return result;
+            }
+
+            @Override
+            public void modifySigningDictionary(PdfDictionary signDic) {
+                signDic.put(PdfName.Filter, PdfName.Adobe_PPKLite);
+                signDic.put(PdfName.SubFilter, PdfName.Adbe_pkcs7_detached);
+            }
+        };
+
         PdfReader pdfReader = new PdfReader(SRC);
-        PdfSigner pdfSigner = new PdfSigner(pdfReader, new FileOutputStream(DEST), true);
-        pdfSigner.setCertificationLevel(PdfSigner.NOT_CERTIFIED);
+        StampingProperties pros = new StampingProperties();
+//        pros.useAppendMode();
+        StartsiSigner pdfSigner = new StartsiSigner(pdfReader, new FileOutputStream(DEST), pros);
+//        pdfSigner.setCertificationLevel(PdfSigner.NOT_CERTIFIED);
+//        pdfSigner.setCertificationLevel(PdfSigner.CERTIFIED_NO_CHANGES_ALLOWED);
         pdfSigner.signExternalContainer(externalP7DetachSignatureContainer, estimatedSize);
     }
-
-    IExternalSignatureContainer externalP7DetachSignatureContainer = new IExternalSignatureContainer() {
-        @Override
-        public byte[] sign(InputStream data) throws GeneralSecurityException {
-
-            byte[] result = null;
-            try {
-                result = SignContainerUtil.P7DetachSigned(data, getPrivateKey());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return result;
-        }
-
-        @Override
-        public void modifySigningDictionary(PdfDictionary signDic) {
-            signDic.put(PdfName.Filter, PdfName.Adobe_PPKLite);
-            signDic.put(PdfName.SubFilter, PdfName.Adbe_pkcs7_detached);
-        }
-    };
 
     public boolean verySign() {
         boolean result = false;
@@ -94,6 +97,7 @@ public class ExternalSignatureContainerDemo {
 
                 result = SignContainerUtil.verifyP7DetachData( originData , signedData, getPublicKey());
                 System.out.println("signname result: " + result);
+                System.out.println("---------------------------");
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -230,4 +230,46 @@ public class NewSign {
         PdfString contents = pdfDictionary.getAsString(PdfName.Contents);
         return contents.getValueBytes();
     }
+
+    public boolean verySign2() {
+        boolean result = false;
+
+        try {
+            PdfReader pdfReader = new PdfReader(DEST);
+            PdfDocument pdfDocument = new PdfDocument(pdfReader);
+            SignatureUtil signatureUtil = new SignatureUtil(pdfDocument);
+            List<String> signedNames = signatureUtil.getSignatureNames();
+
+            //遍历签名的内容并做验签
+            for (String signedName : signedNames) {
+                System.out.println("signname: " + signedName);
+                // 校验签名
+                verifySignature(signatureUtil, signedName);
+
+                //获取源数据
+                byte[] originData = getOriginData(pdfReader, signatureUtil, signedName);
+                //获取签名值
+                byte[] signedData = getSignData(signatureUtil , signedName);
+                //校验签名
+                result = SignUtil.verifyP7DetachData( originData , signedData, getPublicKey());
+                System.out.println("signname result: " + result);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 }

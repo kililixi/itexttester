@@ -1,14 +1,17 @@
 package com.tsuki.tester.newtype.sign;
 
-import com.itextpdf.kernel.pdf.PdfName;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.StampingProperties;
+import com.itextpdf.kernel.PdfException;
+import com.itextpdf.kernel.pdf.*;
+import com.itextpdf.signatures.IExternalSignatureContainer;
+import com.itextpdf.signatures.PdfSignature;
+import com.itextpdf.signatures.PdfSignatureAppearance;
 import com.itextpdf.signatures.PdfSigner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,10 +35,37 @@ public class StartsiSigner extends PdfSigner {
         super(reader, outputStream, properties);
     }
 
-    public InputStream getInputStream(int estimatedSize) throws IOException {
+    public void signExternalContainer(IExternalSignatureContainer externalSignatureContainer, int estimatedSize) throws GeneralSecurityException, IOException {
+        if (closed) {
+            throw new PdfException(PdfException.ThisInstanceOfPdfSignerAlreadyClosed);
+        }
+
+        PdfSignature dic = new PdfSignature();
+        PdfSignatureAppearance appearance = getSignatureAppearance();
+        dic.setReason(appearance.getReason());
+        dic.setLocation(appearance.getLocation());
+        dic.setSignatureCreator(appearance.getSignatureCreator());
+        dic.setContact(appearance.getContact());
+        dic.setDate(new PdfDate(getSignDate())); // time-stamp will over-rule this
+        externalSignatureContainer.modifySigningDictionary(dic.getPdfObject());
+        cryptoDictionary = dic;
+
         Map<PdfName, Integer> exc = new HashMap<>();
         exc.put(PdfName.Contents, estimatedSize * 2 + 2);
         preClose(exc);
-        return super.getRangeStream();
+
+        InputStream data = getRangeStream();
+        byte[] encodedSig = externalSignatureContainer.sign(data);
+        System.out.println(encodedSig.length);
+//        byte[] paddedSig = new byte[estimatedSize];
+//        System.arraycopy(encodedSig, 0, paddedSig, 0, encodedSig.length);
+
+        PdfDictionary dic2 = new PdfDictionary();
+        dic2.put(PdfName.Contents, new PdfString(encodedSig).setHexWriting(true));
+        close(dic2);
+
+        closed = true;
     }
+
+
 }

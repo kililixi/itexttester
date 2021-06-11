@@ -21,7 +21,7 @@ public class SignContainerUtil {
      *
      * @return
      */
-    public static byte[] P7DetachSigned(InputStream stream, PrivateKey privateKey) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public static byte[] P7DetachSigned(InputStream stream, PrivateKey privateKey, int estimatedSize) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
         int nRead;
         byte[] temp = new byte[8192];
@@ -41,6 +41,10 @@ public class SignContainerUtil {
         signature.update(byteArray);
         byte[] signatureValue = signature.sign();
 
+        byte[] finalSignatture = new byte[estimatedSize];
+        System.arraycopy(signatureValue, 0, finalSignatture, 0, signatureValue.length);
+
+        System.out.println("签名， 签名长度为：" + signatureValue.length );
         return signatureValue;
     }
 
@@ -56,7 +60,7 @@ public class SignContainerUtil {
         // MessageDigest digest = MessageDigest.getInstance("SHA-256");
         // byte[] encodedhash = digest.digest(originData);
         // System.out.println(new String(Hex.encode(encodedhash)));
-
+        System.out.println("验证签名， 签名长度为：" + signedData.length );
         signature.update(originData);
         return signature.verify(signedData);
 
