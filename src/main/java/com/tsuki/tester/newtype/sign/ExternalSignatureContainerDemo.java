@@ -21,11 +21,14 @@ import java.util.List;
  **/
 public class ExternalSignatureContainerDemo {
 
-    public static final String SRC = "/Users/startsi/Downloads/dddd.pdf";
-    public static final String DEST = "/Users/startsi/Downloads/signed.pdf";
+//    public static final String SRC = "/Users/startsi/Downloads/dddd.pdf";
+//    public static final String DEST = "/Users/startsi/Downloads/signed.pdf";
 //
-//    public static final String SRC = "/Users/startsi/Downloads/signed2.pdf";
-//    public static final String DEST = "/Users/startsi/Downloads/signed3.pdf";
+//    public static final String SRC = "/Users/startsi/Downloads/signed.pdf";
+//    public static final String DEST = "/Users/startsi/Downloads/signed2.pdf";
+
+    public static final String SRC = "/Users/startsi/Downloads/signed2.pdf";
+    public static final String DEST = "/Users/startsi/Downloads/signed3.pdf";
 
     public static final String p12File = "/Users/startsi/Documents/csr/newesign/user.p12";
 
@@ -33,7 +36,7 @@ public class ExternalSignatureContainerDemo {
         Security.addProvider(new BouncyCastleProvider());
         ExternalSignatureContainerDemo newSign = new ExternalSignatureContainerDemo();
         // sign pdf document
-        newSign.sign();
+//        newSign.sign();
         // verify signature
         newSign.verySign();
     }
@@ -68,7 +71,7 @@ public class ExternalSignatureContainerDemo {
 
         PdfReader pdfReader = new PdfReader(SRC);
         StampingProperties pros = new StampingProperties();
-//        pros.useAppendMode();
+        pros.useAppendMode();
         StartsiSigner pdfSigner = new StartsiSigner(pdfReader, new FileOutputStream(DEST), pros);
 //        pdfSigner.setCertificationLevel(PdfSigner.NOT_CERTIFIED);
 //        pdfSigner.setCertificationLevel(PdfSigner.CERTIFIED_NO_CHANGES_ALLOWED);
@@ -89,14 +92,29 @@ public class ExternalSignatureContainerDemo {
 
                 System.out.println("Signature covers whole document: " + signatureUtil.signatureCoversWholeDocument(signedName));
                 System.out.println("Document revision: " + signatureUtil.getRevision(signedName) + " of " + signatureUtil.getTotalRevisions());
-
                 // original pdf document data
                 byte[] originData = getOriginData(pdfReader, signatureUtil, signedName);
                 // signature data
                 byte[] signedData = getSignData(signatureUtil , signedName);
-
                 result = SignContainerUtil.verifyP7DetachData( originData , signedData, getPublicKey());
+
+                // 获取前面的文档
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                byte bb[] = new byte[1028];
+                InputStream ip = signatureUtil.extractRevision(signedName);
+                int n = 0;
+                while ((n = ip.read(bb)) > 0) {
+                    outputStream.write(bb, 0, n);
+                }
+                outputStream.close();
+                ip.close();
+                byte[] bytes = outputStream.toByteArray();
+                System.out.println("原始数据大小1:" + originData.length);
+                System.out.println("原始数据大小2:" + bytes.length);
+                boolean result2 = SignContainerUtil.verifyP7DetachData(outputStream.toByteArray(), signedData, getPublicKey());
+
                 System.out.println("signname result: " + result);
+                System.out.println("signname result2: " + result2);
                 System.out.println("---------------------------");
             }
         } catch (Exception e) {
@@ -121,7 +139,9 @@ public class ExternalSignatureContainerDemo {
             PdfSignature pdfSignature = signatureUtil.getSignature(signedName);
             PdfArray pdfArray = pdfSignature.getByteRange();
             long[] longs = pdfArray.toLongArray();
-            Arrays.stream(longs).forEach(System.out::println);
+
+//            Arrays.stream(longs).forEach(System.out::println);
+
             RandomAccessFileOrArray randomAccessFileOrArray = pdfReader.getSafeFile();
             RASInputStream rg = new RASInputStream(new RandomAccessSourceFactory().createRanged(randomAccessFileOrArray.createSourceView(), longs));
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
