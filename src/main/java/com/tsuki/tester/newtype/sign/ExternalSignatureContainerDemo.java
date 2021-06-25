@@ -36,9 +36,9 @@ public class ExternalSignatureContainerDemo {
         Security.addProvider(new BouncyCastleProvider());
         ExternalSignatureContainerDemo newSign = new ExternalSignatureContainerDemo();
         // sign pdf document
-//        newSign.sign();
+        newSign.sign();
         // verify signature
-        newSign.verySign();
+//        newSign.verySign();
     }
 
     public void sign() throws IOException, GeneralSecurityException {

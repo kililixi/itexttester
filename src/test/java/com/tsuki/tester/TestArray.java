@@ -2,6 +2,9 @@ package com.tsuki.tester;
 
 import org.junit.Test;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * @program: tester
  * @description:
@@ -17,10 +20,10 @@ public class TestArray {
 //        for (int i = 0 ;i < encodedSig.length; i++) {
 //            encodedSig[i] = (byte)i;
 //        }
-
-        for (byte b : encodedSig) {
-            System.out.println(b);
-        }
+            System.out.println(getUsersProjectRootDirectory());
+//        for (byte b : encodedSig) {
+//            System.out.println(b);
+//        }
 //
 //        byte[] paddedSig = new byte[12];
 //        System.arraycopy(encodedSig, 0, paddedSig, 0, encodedSig.length);
@@ -28,5 +31,16 @@ public class TestArray {
 //        for (byte b : paddedSig) {
 //            System.out.println(b);
 //        }
+    }
+
+    public String getUsersProjectRootDirectory() {
+        String envRootDir = System.getProperty("user.dir");
+        System.out.println(envRootDir);
+        Path rootDir = Paths.get(".").normalize().toAbsolutePath();
+        if ( rootDir.startsWith(envRootDir) ) {
+            return rootDir.toString();
+        } else {
+            throw new RuntimeException("Root dir not found in user directory.");
+        }
     }
 }

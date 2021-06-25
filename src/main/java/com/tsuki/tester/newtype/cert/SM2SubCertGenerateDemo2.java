@@ -116,8 +116,8 @@ public class SM2SubCertGenerateDemo2 {
         String p12File = "/Users/startsi/Documents/csr/newesign/ROOT.p12";
         char[] pwd = "111111".toCharArray();
 
-        String out = "/Users/startsi/Documents/csr/newesign/user.cer";
-        String out2 = "/Users/startsi/Documents/csr/newesign/user.p12";
+        String out = "/Users/startsi/Documents/csr/newesign/user2.cer";
+        String out2 = "/Users/startsi/Documents/csr/newesign/user2.p12";
         File file = new File(out);
         if (file.exists()) {
             file.delete();
@@ -130,7 +130,7 @@ public class SM2SubCertGenerateDemo2 {
         // 1. 载入P12得到证书和私钥
         KeyStore store = KeyStore.getInstance("PKCS12", "BC");
         try (FileInputStream fIn = new FileInputStream(p12File);
-             FileWriter fw = new FileWriter(out)) {
+             FileOutputStream fw = new FileOutputStream(out)) {
             store.load(fIn, pwd);
             // 2. 取得CA根证书
             Certificate root = store.getCertificateChain("private")[0];
@@ -144,14 +144,18 @@ public class SM2SubCertGenerateDemo2 {
             PKCS10CertificationRequest req = SM2PKCS10Tools.generate("SM3withSM2", kp, subject);
             String p10 = Base64.toBase64String(req.getEncoded());
             // 4-2. 签发证书
-            X509Certificate userCert = issue( p10, root, privateKey);
+            X509Certificate userCert = issue(p10, root, privateKey);
 
-            // 5. 保存到本地
-            fw.write(Base64.toBase64String(userCert.getEncoded()));
+            // 5. 保存到本地.
+            // base64
+//            fw.write(Base64.toBase64String(userCert.getEncoded()));
+            byte[] der = userCert.getEncoded();
+            fw.write(der);
             // 6. 保存p12
             KeyStore store2 = KeyStore.getInstance("PKCS12", "BC");
             store.load(null, null);
-            store.setKeyEntry("private", kp.getPrivate(), pwd, new Certificate[]{ userCert });
+            store.setKeyEntry("private", kp.getPrivate(), pwd, new Certificate[]{userCert});
+
             store.store(new FileOutputStream(out2), pwd);
         }
     }

@@ -127,7 +127,7 @@ public class SM2CARootKeyStoreDemo {
         // 3.2 写入证书以及公钥
         store.setKeyEntry("private", pk.getPrivate(), pwd, new Certificate[]{rootCert});
         try (FileOutputStream out = new FileOutputStream(file);
-             FileWriter fw = new FileWriter("/Users/startsi/Documents/csr/newesign/ROOT.cer")) {
+             FileWriter fw = new FileWriter("/Users/startsi/Documents/csr/newesign/ROOT2.cer")) {
             // 3.3 加密写入文件
             store.store(out, pwd);
             fw.write(Base64.toBase64String(rootCert.getEncoded()));
